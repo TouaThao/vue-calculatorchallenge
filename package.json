@@ -1,5 +1,5 @@
 {
-  "name": "code",
+  "name": "package.json",
   "version": "1.0.0",
   "description": "A Vue.js project",
   "author": "Toua Thao <touathao09@gmail.com>",
@@ -10,6 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "express": "^4.17.1",
     "firebase": "^6.1.0",
     "moment": "^2.24.0",
     "vue": "^2.5.2",
@@ -61,5 +62,15 @@
     "> 1%",
     "last 2 versions",
     "not ie <= 8"
-  ]
+  ],
+  "main": ".postcssrc.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TouaThao/vue-calculatorchallenge.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TouaThao/vue-calculatorchallenge/issues"
+  },
+  "homepage": "https://github.com/TouaThao/vue-calculatorchallenge#readme"
 }

@@ -37,13 +37,9 @@
 
 <script>
 import db from "@/firebase/init";
-import Display from "./Display";
 import moment from 'moment'
 export default {
   name: "Calculator",
-  components: {
-    Display
-  },
   data() {
     return {
       limitationList:10,
@@ -118,8 +114,6 @@ export default {
         })
     }
   },
-//      <li v-for="(message,index) in newMessage" :key="message.id"
-     //  v-if="newMessage && newMessage.length > 10 && index <= limitationList">
 
   created(){
     let ref = db.collection('number').orderBy('timestamp')
