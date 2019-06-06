@@ -1,6 +1,7 @@
 <template>
+<div>
   <div class="calculator">
-    <div class="display">{{current || 0}}</div>
+    <div  class="display" >{{current || 0}}</div>
     <div @click="clear" class="btn">C</div>
     <div @click="sign" class="btn">+/-</div>
     <div @click="percent" class="btn">%</div>
@@ -20,18 +21,24 @@
     <div @click="append('0')" class="btn zero">0</div>
     <div @click="dot" class="btn">.</div>
     <div @click="equal(), addMessage()" class="btn operator">=</div>
-    <div class="card-action"></div>
-    <ul>
-      <li v-for="(message,index) in newMessage" :key="index">
-        <span> {{message.current}}</span>
+    </div>
+    <div class="card">
+      <div class='card-content'>
+   <ul class="messages" v-chat-scroll>
+      <li v-for="(message,index) in newMessage.slice(Math.max(newMessage.length -10,0))":key="message.id">
+        <span class ='grey-text text-darken-3'>Result: {{message.current}}</span>
+        <span class='grey-text time'>Time:{{message.timestamp}}</span>
       </li>
     </ul>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import db from "@/firebase/init";
 import Display from "./Display";
+import moment from 'moment'
 export default {
   name: "Calculator",
   components: {
@@ -39,6 +46,7 @@ export default {
   },
   data() {
     return {
+      limitationList:10,
       current: "",
       operator: null,
       previous: null,
@@ -79,6 +87,7 @@ export default {
     divide() {
       this.operator = (a, b) => a / b;
       this.setPrevious();
+      
     },
     multiply() {
       this.operator = (a, b) => a * b;
@@ -94,8 +103,8 @@ export default {
       
     },
     equal() {
-      this.current = `${this.operator(
-         parseFloat(this.previous),
+        this.current = `${this.operator(
+        parseFloat(this.previous),
         parseFloat(this.current)
       )}`;
       this.previous = null;
@@ -103,19 +112,25 @@ export default {
     addMessage(){
         db.collection('number').add({
           current: this.current,
+          timestamp: Date.now()
         }).catch(err => {
           console.log(err)
         })
     }
   },
+//      <li v-for="(message,index) in newMessage" :key="message.id"
+     //  v-if="newMessage && newMessage.length > 10 && index <= limitationList">
+
   created(){
-    let ref = db.collection('number')
+    let ref = db.collection('number').orderBy('timestamp')
     ref.onSnapshot(snapshot=>{
       snapshot.docChanges().forEach(change=>{
         if(change.type === 'added'){
           let doc = change.doc
           this.newMessage.push({
-            current:doc.data().current
+            id:doc.id,
+            current:doc.data().current,
+            timestamp:moment(doc.data().timestamp).format('lll')
           })
         }
       })
@@ -135,6 +150,29 @@ export default {
   grid-auto-rows: minmax(50px, auto);
   text-align: center;
 }
+
+.card span{
+  font-size: 1.4em;
+}
+.card .time{
+  display: block;
+  font-size:0.8em;
+}
+.messages{
+  max-height: 300px;
+  overflow: auto;
+}
+.messages::-webkit-scrollbar {
+  width: 3px;
+}
+ 
+.messages::-webkit-scrollbar-track {
+  background: #ddd;
+}
+ 
+.messages::-webkit-scrollbar-thumb {
+  background: #aaa; 
+}
 .display {
   grid-column: 1 / 5;
   background-color: gray;
@@ -148,14 +186,15 @@ export default {
   background-color: #eee;
   border: 2px solid gray;
   color: black;
+  cursor:pointer;
+}
+.btn:active {
+   transform: scale(0.95);
 }
 
 .operator {
   background-color: orange;
   color: white;
 }
-.calculator .result {
-  grid-column: 1 / 5;
-  background: gray;
-}
+
 </style>
